@@ -1,0 +1,45 @@
+name: Repack Docker Image
+
+on:
+  push:
+    branches:
+      - main  # Change this to your default branch if different
+
+jobs:
+  repack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Rust and Cargo
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Install docker-repack
+        run: cargo install docker-repack
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull original Docker image
+        run: docker pull ollama/ollama:latest
+
+      - name: Repack Docker image
+        run: |
+          mkdir -p oci-directory  # Create a directory to store the repacked image
+          docker-repack docker://ollama:latest oci://oci-directory/ --target-size=50MB
+
+      - name: Build and push repacked image
+        run: |
+          # Load the repacked image and tag it
+          docker load --input oci-directory/image.tar
+          docker tag repacked-image:latest ghcr.io/${{ github.repository }}/repacked-image:tag
+          docker push ghcr.io/${{ github.repository }}/repacked-image:tag

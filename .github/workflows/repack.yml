@@ -34,11 +34,16 @@ jobs:
       - name: Repack Docker image
         run: |
           mkdir -p oci-directory  # Create a directory to store the repacked image
-          docker-repack docker://nginx:latest oci://image --target-size=10MB --platform=linux/amd64
+          docker-repack docker://nginx:latest oci://oci-directory --target-size=10MB --platform=linux/amd64
+
+      - name: List contents of oci-directory
+        run: |
+          echo "Contents of oci-directory:"
+          ls -la oci-directory
 
       - name: Build and push repacked image
         run: |
           # Load the repacked image and tag it
-          docker load --input image/
+          docker load --input oci-directory/image.tar
           docker tag repacked-image:latest ghcr.io/${{ github.repository }}/repacked-image:tag
           docker push ghcr.io/${{ github.repository }}/repacked-image:tag

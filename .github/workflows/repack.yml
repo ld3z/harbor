@@ -34,7 +34,7 @@ jobs:
       - name: Repack Docker image
         run: |
           mkdir -p oci-directory  # Create a directory to store the repacked image
-          docker-repack docker://nginx:latest oci://oci-directory/ --target-size=50MB --platform=linux/amd64
+          docker-repack docker://nginx:latest oci://image --target-size=50MB --platform=linux/amd64
 
       - name: Build and push repacked image
         run: |

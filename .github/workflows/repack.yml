@@ -48,7 +48,7 @@ jobs:
 
       - name: Convert index.json to Docker image
         run: |
-          skopeo copy oci:oci-directory docker://ghcr.io/${{ github.repository }}/repacked-image:tag
+          skopeo copy oci:oci-directory docker://ghcr.io/${{ github.repository }}/repacked-image
 
       - name: Push repacked image to GitHub Container Registry
         run: |

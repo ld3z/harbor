@@ -29,9 +29,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pull original Docker image
-        run: docker pull ollama/ollama:latest
-
       - name: Repack Docker image
         run: |
           mkdir -p oci-directory  # Create a directory to store the repacked image

@@ -24,6 +24,11 @@ jobs:
         with:
           crate: docker-repack
 
+      - name: Install skopeo
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y skopeo
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
         with:
@@ -41,9 +46,10 @@ jobs:
           echo "Contents of oci-directory:"
           ls -la oci-directory
 
-      - name: Build and push repacked image
+      - name: Convert index.json to Docker image
         run: |
-          # Load the repacked image and tag it
-          docker load --input oci-directory/image.tar
-          docker tag repacked-image:latest ghcr.io/${{ github.repository }}/repacked-image:tag
+          skopeo copy oci:oci-directory docker://ghcr.io/${{ github.repository }}/repacked-image:tag
+
+      - name: Push repacked image to GitHub Container Registry
+        run: |
           docker push ghcr.io/${{ github.repository }}/repacked-image:tag

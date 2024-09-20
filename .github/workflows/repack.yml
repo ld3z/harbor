@@ -39,6 +39,6 @@ jobs:
       - name: Build and push repacked image
         run: |
           # Load the repacked image and tag it
-          docker load --input oci-directory/image.tar
+          docker load --input image
           docker tag repacked-image:latest ghcr.io/${{ github.repository }}/repacked-image:tag
           docker push ghcr.io/${{ github.repository }}/repacked-image:tag
